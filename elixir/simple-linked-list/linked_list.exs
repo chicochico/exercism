@@ -5,17 +5,13 @@ defmodule LinkedList do
   Construct a new LinkedList
   """
   @spec new() :: t
-  def new() do
-    {}
-  end
+  def new(), do: {}
 
   @doc """
   Push an item onto a LinkedList
   """
   @spec push(t, any()) :: t
-  def push(list, e) do
-    {e, list}
-  end
+  def push(list, e), do: {e, list}
 
   @doc """
   Calculate the length of a LinkedList
