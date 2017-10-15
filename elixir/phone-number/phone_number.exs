@@ -34,17 +34,6 @@ defmodule Phone do
       <<num::binary-size(10)>> -> num
       false -> "0000000000"
     end
-    #case valid?(raw) do
-      #true ->
-        #case stripped do
-          #<<_::binary-size(1), num::binary-size(10)>> ->
-            #num
-          #<<num::binary-size(10)>> ->
-            #num
-        #end
-      #false ->
-        #"0000000000"
-    #end
   end
 
   def strip(raw) do
@@ -52,7 +41,6 @@ defmodule Phone do
     |> Regex.scan(raw)
     |> Enum.join
   end
-
 
   def valid_number?(<<number::binary-size(10)>>) do
     case number do
