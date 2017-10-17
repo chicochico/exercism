@@ -2,7 +2,6 @@ defmodule Roman do
   @doc """
   Convert the number to a roman number.
   """
-
   @spec numerals(pos_integer) :: String.t
   def numerals(n), do: numerals(n, "")
   def numerals(0, acc), do: acc
