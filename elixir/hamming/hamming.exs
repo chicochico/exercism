@@ -15,5 +15,5 @@ defmodule Hamming do
   def hamming_distance(strand1, strand2), do: hamming_distance(strand1, strand2, 0)
   def hamming_distance([], [], acc), do: {:ok, acc}
   def hamming_distance([hs1|ts1], [hs1|ts2], acc), do: hamming_distance(ts1, ts2, acc)
-  def hamming_distance([hs1|ts1], [hs2|ts2], acc), do: hamming_distance(ts1, ts2, acc+1)
+  def hamming_distance([_|ts1], [_|ts2], acc), do: hamming_distance(ts1, ts2, acc+1)
 end
