@@ -14,27 +14,39 @@ defmodule Tournament do
   def tally(input) do
     input
     |> Enum.map(&String.split(&1, ";"))
-    |> Enum.reduce(%{}, fn record, acc ->
-      case record do
-        [team_a, team_b, "win"] ->
-          Map.update(acc, team_a, [1, 1, 0, 0, 3], &update_tally("win", &1))
-          |> Map.update(team_b, [1, 0, 0, 1, 0], &update_tally("loss", &1))
-        [team_a, team_b, "draw"] ->
-          Map.update(acc, team_a, [1, 0, 1, 0, 1], &update_tally("draw", &1))
-          |> Map.update(team_b, [1, 0, 1, 0, 1], &update_tally("draw", &1))
-        [team_a, team_b, "loss"] ->
-          Map.update(acc, team_a, [1, 0, 0, 1, 0], &update_tally("loss", &1))
-          |> Map.update(team_b, [1, 1, 0, 0, 3], &update_tally("win", &1))
-        _ -> acc
-      end
-    end)
-    |> Enum.sort(fn {_, [_, _, _, _, s1]}, {_, [_, _, _, _, s2]} ->
-      s1 >= s2
-    end)
+    |> Enum.reduce(%{}, &process_record(&1, &2))
+    |> Enum.sort(&by_score(&1, &2))
     |> format_tally
   end
 
-  def format_tally(tally) do
+  defp process_record(record, acc) do
+    case record do
+      [team_a, team_b, "win"] ->
+        Map.update(acc, team_a, ini_tally("win"), &update_tally("win", &1))
+        |> Map.update(team_b, ini_tally("loss"), &update_tally("loss", &1))
+      [team_a, team_b, "draw"] ->
+        Map.update(acc, team_a, ini_tally("draw"), &update_tally("draw", &1))
+        |> Map.update(team_b, ini_tally("draw"), &update_tally("draw", &1))
+      [team_a, team_b, "loss"] ->
+        Map.update(acc, team_a, ini_tally("loss"), &update_tally("loss", &1))
+        |> Map.update(team_b, ini_tally("win"), &update_tally("win", &1))
+      _ -> acc
+    end
+  end
+
+  defp ini_tally(result) do
+    case result do
+      "win" -> [1, 1, 0, 0, 3]
+      "draw" -> [1, 0, 1, 0, 1]
+      "loss" -> [1, 0, 0, 1, 0]
+    end
+  end
+
+  defp by_score({_, [_, _, _, _, s1]}, {_, [_, _, _, _, s2]}) do
+    s1 >= s2
+  end
+
+  defp format_tally(tally) do
     header = "Team                           | MP |  W |  D |  L |  P\n"
     tally
     |> Enum.reduce(header, fn {team, [mp, w, d, l, p]}, acc ->
@@ -51,19 +63,19 @@ defmodule Tournament do
   end
 
   # [MP, W, D, L, P]
-  def update_tally("win", tally) do
+  defp update_tally("win", tally) do
     tally
     |> List.update_at(0, &(&1 + 1))
     |> List.update_at(1, &(&1 + 1))
     |> List.update_at(4, &(&1 + 3))
   end
-  def update_tally("draw", tally) do
+  defp update_tally("draw", tally) do
     tally
     |> List.update_at(0, &(&1 + 1))
     |> List.update_at(2, &(&1 + 1))
     |> List.update_at(4, &(&1 + 1))
   end
-  def update_tally("loss", tally) do
+  defp update_tally("loss", tally) do
     tally
     |> List.update_at(0, &(&1 + 1))
     |> List.update_at(3, &(&1 + 1))
