@@ -19,19 +19,26 @@ defmodule Tournament do
     |> format_tally
   end
 
-  defp process_record(record, acc) do
-    case record do
-      [team_a, team_b, "win"] ->
-        Map.update(acc, team_a, ini_tally("win"), &update_tally("win", &1))
-        |> Map.update(team_b, ini_tally("loss"), &update_tally("loss", &1))
-      [team_a, team_b, "draw"] ->
-        Map.update(acc, team_a, ini_tally("draw"), &update_tally("draw", &1))
-        |> Map.update(team_b, ini_tally("draw"), &update_tally("draw", &1))
-      [team_a, team_b, "loss"] ->
-        Map.update(acc, team_a, ini_tally("loss"), &update_tally("loss", &1))
-        |> Map.update(team_b, ini_tally("win"), &update_tally("win", &1))
-      _ -> acc
+  defp process_record([team_a, team_b, result], scores) do
+    case result do
+      "win" ->
+        update_score(scores, team_a, "win")
+        |> update_score(team_b, "loss")
+      "draw" ->
+        update_score(scores, team_a, "draw")
+        |> update_score(team_b, "draw")
+      "loss" ->
+        update_score(scores, team_a, "loss")
+        |> update_score(team_b, "win")
+      _ -> scores
     end
+  end
+
+  defp process_record(_, result), do: result
+
+  defp update_score(scores, team, result) do
+    scores
+    |> Map.update(team, ini_tally(result), &update_tally(result, &1))
   end
 
   defp ini_tally(result) do
@@ -44,6 +51,27 @@ defmodule Tournament do
 
   defp by_score({_, [_, _, _, _, s1]}, {_, [_, _, _, _, s2]}) do
     s1 >= s2
+  end
+
+  # [MP, W, D, L, P]
+  defp update_tally("win", tally) do
+    tally
+    |> List.update_at(0, &(&1 + 1))
+    |> List.update_at(1, &(&1 + 1))
+    |> List.update_at(4, &(&1 + 3))
+  end
+
+  defp update_tally("draw", tally) do
+    tally
+    |> List.update_at(0, &(&1 + 1))
+    |> List.update_at(2, &(&1 + 1))
+    |> List.update_at(4, &(&1 + 1))
+  end
+
+  defp update_tally("loss", tally) do
+    tally
+    |> List.update_at(0, &(&1 + 1))
+    |> List.update_at(3, &(&1 + 1))
   end
 
   defp format_tally(tally) do
@@ -60,25 +88,6 @@ defmodule Tournament do
       <> "\n"
     end)
     |> String.trim
-  end
-
-  # [MP, W, D, L, P]
-  defp update_tally("win", tally) do
-    tally
-    |> List.update_at(0, &(&1 + 1))
-    |> List.update_at(1, &(&1 + 1))
-    |> List.update_at(4, &(&1 + 3))
-  end
-  defp update_tally("draw", tally) do
-    tally
-    |> List.update_at(0, &(&1 + 1))
-    |> List.update_at(2, &(&1 + 1))
-    |> List.update_at(4, &(&1 + 1))
-  end
-  defp update_tally("loss", tally) do
-    tally
-    |> List.update_at(0, &(&1 + 1))
-    |> List.update_at(3, &(&1 + 1))
   end
 end
 
