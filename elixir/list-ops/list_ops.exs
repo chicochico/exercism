@@ -6,13 +6,11 @@ defmodule ListOps do
   # Note that `++` is a function from an external module (Kernel, which is
   # automatically imported) and so shouldn't be used either.
   @spec count(list) :: non_neg_integer
-  def count(l), do: count(l, 0)
-  def count([], counter), do: counter
-  def count([_|t], counter), do: count(t, counter+1)
+  def count([_|t]), do: 1 + count(t)
+  def count([]), do: 0
 
   @spec reverse(list) :: list
-  def reverse([]), do: []
-  def reverse([h|t]), do: reverse(t, [h])
+  def reverse(l), do: reverse(l, [])
   def reverse([h|t], acc), do: reverse(t, [h|acc])
   def reverse([], acc), do: acc
 
@@ -24,20 +22,14 @@ defmodule ListOps do
 
   @type acc :: any
   @spec reduce(list, acc, ((any, acc) -> acc)) :: acc
-  def reduce([], acc, _), do: acc
   def reduce([h|t], acc, f), do: reduce(t, f.(h, acc), f)
+  def reduce([], acc, _), do: acc
 
   @spec append(list, list) :: list
-  def append(l1, l2), do: reverse(l1) |> do_append(l2)
-
-  defp do_append([], acc), do: acc
-  defp do_append([h|t], acc), do: do_append(t, [h|acc])
+  def append([h|t], l2), do: [h|append(t, l2)]
+  def append([], l2), do: l2
 
   @spec concat([[any]]) :: [any]
+  def concat([h|t]), do: append(h, concat(t))
   def concat([]), do: []
-  def concat([h|t]) when is_list(h), do: concat(t, reverse(h))
-  def concat([h|t]), do: concat(t, [h])
-  def concat([h|t], acc) when is_list(h), do: concat(append(h, t), acc)
-  def concat([h|t], acc), do: concat(t, [h|acc])
-  def concat([], acc), do: reverse(acc)
 end
