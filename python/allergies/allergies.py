@@ -5,7 +5,7 @@ class Allergies(object):
 
     def __init__(self, score):
         self.score = score
-        self.alergen_scores = {
+        self.allergen_scores = {
             'eggs': 1,
             'peanuts': 2,
             'shellfish': 4,
@@ -17,16 +17,9 @@ class Allergies(object):
         }
 
     def is_allergic_to(self, item):
-        return and_(self.score, self.alergen_scores[item]) != 0
+        return and_(self.score, self.allergen_scores[item]) != 0
 
     @property
     def lst(self):
-        alergens = []
-
-        for k, v in self.alergen_scores.items():
-            if and_(self.score, v) != 0:
-                alergens.append(k)
-
-        return alergens
-
+        return [item for item in self.allergen_scores.keys() if self.is_allergic_to(item)]
 
