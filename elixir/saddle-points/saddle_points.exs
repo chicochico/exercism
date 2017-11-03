@@ -36,30 +36,45 @@ defmodule SaddlePoints do
     row_max = Enum.map(rows, &Enum.max(&1))
     col_min = Enum.map(cols, &Enum.min(&1))
 
-    for i <- 0..length(row_max)-1 do
-      for j <- 0..length(col_min)-1 do
-        {i, j}
-      end
-    end
+    get_indexes(row_max, col_min)
     |> List.flatten
     |> Enum.reduce([], fn {i, j}, acc ->
       e = at(rows, i, j)
-      with true <- e >= Enum.at(row_max, i),
-           true <- e <= Enum.at(col_min, j) do
+      if e >= at(row_max, i) and e <= at(col_min, j) do
         acc ++ [{i, j}]
       else
-        false -> acc
+        acc
       end
     end)
   end
 
   @doc """
+  generate tuples with indexes to iterate thru
+  a list of lists
+  """
+  @spec get_indexes(list, list) :: [tuple]
+  def get_indexes(l1, l2) do
+    for i <- 0..length(l1)-1 do
+      for j <- 0..length(l2)-1 do
+        {i, j}
+      end
+    end
+  end
+
+  @doc """
   get the element of a matrix given the row and column
   """
-  @spec at([[]], integer, integer) :: any
+  @spec at([list], integer, integer) :: any
   def at(matrix, i, j) do
     matrix
     |> Enum.at(i)
     |> Enum.at(j)
   end
+
+  @spec at([], integer) :: any
+  def at(list, i) do
+    list
+    |> Enum.at(i)
+  end
+
 end
