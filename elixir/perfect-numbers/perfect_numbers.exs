@@ -26,6 +26,7 @@ defmodule PerfectNumbers do
     end
   end
 
+  @spec get_factors(integer) :: [integer]
   def get_factors(1), do: [0]
   def get_factors(number) do
     for n <- (number-1)..1, rem(number, n) == 0, do: n
