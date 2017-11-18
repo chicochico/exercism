@@ -14,13 +14,12 @@ defmodule Atbash do
     |> String.replace(~r/[[:punct:]]|\s/, "")
     |> to_charlist
     |> encode([])
-    |> to_charlist
     |> Enum.chunk_every(5)
     |> Enum.join(" ")
   end
 
-  @spec encode(charlist, charlist) :: String.t()
-  def encode([], acc), do: List.to_string(acc)
+  @spec encode(charlist, charlist) :: charlist
+  def encode([], acc), do: acc
   def encode([h|t], acc) do
     encoded =
       case h do
