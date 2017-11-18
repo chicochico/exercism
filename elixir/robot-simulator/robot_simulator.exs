@@ -6,7 +6,7 @@ defmodule RobotSimulator do
   """
   @spec create(direction :: atom, position :: { integer, integer }) :: any
   def create(direction \\ :north, position \\ {0, 0}) do
-    directions = [:north, :east, :south, :west]
+    directions = ~w(north east south west)a
     case position do
       {x, y} when is_integer(x) and is_integer(y) ->
         if direction in directions do
@@ -42,7 +42,7 @@ defmodule RobotSimulator do
 
   @spec turn_clockwise(robot :: any) :: any
   def turn_clockwise(%{direction: direction, position: position}) do
-    directions = [:north, :east, :south, :west]
+    directions = ~w(north east south west)a
     current = Enum.find_index(directions, &(&1 == direction))
     {:ok, new_direction} =
       directions
@@ -53,7 +53,7 @@ defmodule RobotSimulator do
 
   @spec turn_anticlockwise(robot :: any) :: any
   def turn_anticlockwise(%{direction: direction, position: position}) do
-    directions = [:north, :west, :south, :east]
+    directions = ~w(north west south east)a
     current = Enum.find_index(directions, &(&1 == direction))
     {:ok, new_direction} =
       directions
