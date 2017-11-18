@@ -22,34 +22,9 @@ defmodule Atbash do
   def encode([], acc), do: acc
   def encode([h|t], acc) do
     encoded =
-      case h do
-        ?a -> ?z
-        ?b -> ?y
-        ?c -> ?x
-        ?d -> ?w
-        ?e -> ?v
-        ?f -> ?u
-        ?g -> ?t
-        ?h -> ?s
-        ?i -> ?r
-        ?j -> ?q
-        ?k -> ?p
-        ?l -> ?o
-        ?m -> ?n
-        ?n -> ?m
-        ?o -> ?l
-        ?p -> ?k
-        ?q -> ?j
-        ?r -> ?i
-        ?s -> ?h
-        ?t -> ?g
-        ?u -> ?f
-        ?v -> ?e
-        ?w -> ?d
-        ?x -> ?c
-        ?y -> ?b
-        ?z -> ?a
-        _ -> h
+      cond do
+        h in ?a..?z -> 219 - h
+        true -> h
       end
       encode(t, acc ++ [encoded])
   end
@@ -60,9 +35,3 @@ defmodule Atbash do
     |> String.replace(" ", "")
   end
 end
-
-
-#```plain
-#Plain:  abcdefghijklmnopqrstuvwxyz
-#Cipher: zyxwvutsrqponmlkjihgfedcba
-#```
