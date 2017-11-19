@@ -30,24 +30,9 @@ defmodule SimpleCipher do
   "abcabca". If the key is longer than the text, only use as many letters of it
   as are necessary.
   """
+  @spec encode(String.t(), String.t()) :: String.t()
   def encode(plaintext, key) do
-    plaintext =
-      plaintext
-      |> to_charlist
-    key =
-      key
-      |> to_charlist
-      |> Stream.cycle
-      |> Enum.take(length plaintext)
-
-    for {c, k} <- Enum.zip(plaintext, key) do
-      if c in ?a..?z do
-        rem((c-97)+(k-97), 26) + 97
-      else
-        c
-      end
-    end
-    |> List.to_string
+    process(:encode, plaintext, key)
   end
 
   @doc """
@@ -60,24 +45,42 @@ defmodule SimpleCipher do
   but you will go the opposite way, so "d" becomes "a", "w" becomes "t",
   etc..., depending on how much you shift the alphabet.
   """
+  @spec decode(String.t(), String.t()) :: String.t()
   def decode(ciphertext, key) do
-    ciphertext =
-      ciphertext
-      |> to_charlist
+    process(:decode, ciphertext, key)
+  end
+
+  @spec process(atom, String.t(), String.t()) :: String.t()
+  def process(type, text, key) do
+    text = to_charlist(text)
     key =
       key
       |> to_charlist
       |> Stream.cycle
-      |> Enum.take(length ciphertext)
+      |> Enum.take(length text)
+    fun = case type do
+      :encode -> &encode_char/2
+      :decode -> &decode_char/2
+    end
 
-    for {c, k} <- Enum.zip(ciphertext, key) do
+    for {c, k} <- Enum.zip(text, key) do
       if c in ?a..?z do
-        rem((c-97)-(k-97)+26, 26) + 97
+        fun.(c, k)
       else
         c
       end
     end
     |> List.to_string
+  end
+
+  @spec encode_char(integer, integer) :: integer
+  defp encode_char(c, k) do
+    rem((c-97)+(k-97), 26) + 97
+  end
+
+  @spec decode_char(integer, integer) :: integer
+  defp decode_char(c, k) do
+    rem((c-97)-(k-97)+26, 26) + 97
   end
 end
 
