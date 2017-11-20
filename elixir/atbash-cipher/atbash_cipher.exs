@@ -26,7 +26,7 @@ defmodule Atbash do
         h in ?a..?z -> 219 - h
         true -> h
       end
-      encode(t, acc ++ [encoded])
+    encode(t, acc ++ [encoded])
   end
 
   @spec decode(String.t) :: String.t
