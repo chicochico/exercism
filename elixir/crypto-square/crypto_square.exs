@@ -27,6 +27,10 @@ defmodule CryptoSquare do
     |> String.replace("_", "")
   end
 
+  @doc """
+  Find ideal column count for given length
+  """
+  @spec find_column_count(integer, integer) :: integer
   def find_column_count(len), do: find_column_count(len, 1)
   def find_column_count(len, n) when n*n >= len, do: n
   def find_column_count(len, n), do: find_column_count(len, n+1)
