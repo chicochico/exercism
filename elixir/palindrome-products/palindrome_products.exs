@@ -10,9 +10,7 @@ defmodule Palindromes do
       palindrome?(a*b) do
       [a, b]
     end
-    |> Enum.reduce(%{}, fn [a, b], acc ->
-      Map.update(acc, a*b, [[a, b]], &(&1 ++ [[a, b]]))
-    end)
+    |> Enum.group_by(fn [a, b] -> a*b end)
   end
 
   @spec palindrome?(integer) :: boolean
