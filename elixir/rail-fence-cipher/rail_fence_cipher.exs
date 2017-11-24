@@ -5,16 +5,14 @@ defmodule RailFenceCipher do
   @spec encode(String.t, pos_integer) :: String.t
   def encode(str, rails) do
     graphemes = String.graphemes(str)
-    cond do
-      rails > 1 -> stream = Enum.to_list(0..(rails-1)) ++ Enum.to_list((rails-2)..1)
-      rails == 1 -> stream = [0]
-    end
-    bar = Stream.cycle(stream) |> Enum.take(length(graphemes))
-    chars = Enum.zip(graphemes, bar)
-            |> Enum.group_by(fn {_, i} -> i end)
-    for {_, rail} <- chars, {c, _} <- rail do
-      c
-    end
+    stream = create_stream(rails, length graphemes)
+    encoded =
+      graphemes
+      |> Enum.zip(stream)
+      |> Enum.group_by(fn {_, i} -> i end)
+
+    # extract characters from rails
+    (for {_, rail} <- encoded, {c, _} <- rail, do: c)
     |> Enum.join
   end
 
@@ -24,20 +22,28 @@ defmodule RailFenceCipher do
   @spec decode(String.t, pos_integer) :: String.t
   def decode(str, rails) do
     graphemes = String.graphemes(str)
-    cond do
-      rails > 1 -> stream = Enum.to_list(0..(rails-1)) ++ Enum.to_list((rails-2)..1)
-      rails == 1 -> stream = [0]
-    end
-    bar =
+    stream = create_stream(rails, length graphemes)
+    decoded =
       stream
-      |> Stream.cycle
-      |> Enum.take(length graphemes)
       |> Enum.zip(0..(length(graphemes)))
       |> Enum.sort
       |> Enum.zip(graphemes)
       |> Enum.sort(fn {{_, a}, _}, {{_, b}, _} -> a < b end)
 
-    (for {{_, _}, c} <- bar, do: c)
+    (for {{_, _}, c} <- decoded, do: c)
     |> Enum.join
+  end
+
+  @doc """
+  Create a stream with the sequence the characters should be written
+  """
+  @spec create_stream(integer, integer) :: list
+  defp create_stream(rails, len) do
+    case rails > 1 do
+      true -> Enum.to_list(0..(rails-1)) ++ Enum.to_list((rails-2)..1)
+      false -> [0]
+    end
+    |> Stream.cycle
+    |> Enum.take(len)
   end
 end
