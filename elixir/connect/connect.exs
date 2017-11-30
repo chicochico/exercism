@@ -6,38 +6,56 @@ defmodule Connect do
   """
   @spec result_for([String.t]) :: :none | :black | :white
   def result_for(board) do
-    board =
-      board
-      |> Enum.map(&String.graphemes(&1))
-
-    white_board = with_index(board)
-    black_board =
-      board
-      |> Enum.zip
-      |> Enum.map(&Tuple.to_list(&1))
-      |> with_index
-
-    white =
-      white_board
-      |> List.last
-      |> Enum.filter(fn {player, _} -> player == "O" end)
-      |> explore([], white_board)
-      |> connected?
-
-    black =
-      black_board
-      |> List.last
-      |> Enum.filter(fn {player, _} -> player == "X" end)
-      |> explore([], black_board)
-      |> connected?
-
     cond do
-      white -> :white
-      black -> :black
+      player_connected?("O", board) -> :white
+      player_connected?("X", board) -> :black
       true -> :none
     end
   end
 
+  @doc """
+  Will check if player connected top and bottom
+  """
+  @spec player_connected?(String.t(), list) :: boolean
+  def player_connected?(player, board) do
+    board =
+      case player do
+        "O" ->
+          board
+          |> Enum.map(&String.graphemes(&1))
+          |> with_index
+        "X" ->
+          board
+          |> Enum.map(&String.graphemes(&1))
+          |> transpose
+          |> with_index
+      end
+
+    board
+    |> get_starting_point
+    |> Enum.filter(fn {side, _} -> side == player end)
+    |> explore([], board)
+    |> Enum.any?(fn {_, {row, _}} -> row == 0 end)
+  end
+
+  @spec get_starting_point([list]) :: list
+  defp get_starting_point(board) do
+    board
+    |> List.last
+  end
+
+  @spec transpose([list]) :: [list]
+  defp transpose(board) do
+    board
+    |> Enum.zip
+    |> Enum.map(&Tuple.to_list(&1))
+  end
+
+  @doc """
+  Given a starting point will explore
+  all possible paths
+  """
+  @spec explore(list, list, [list]) :: list
   def explore([], visited, _board), do: visited
 
   def explore([h|t], visited, board) do
@@ -49,17 +67,21 @@ defmodule Connect do
     end
   end
 
-  def connected?(visited) do
-    visited
-    |> Enum.any?(fn {_, {row, _}} -> row == 0 end)
-  end
-
+  @doc """
+  Look at the adjacent neighbors
+  and returns the reachable next nodes
+  """
+  @spec find_next_steps({String.t(), tuple}, list, [list]) :: list
   def find_next_steps({color, {i, j}}, visited, board) do
     lookaround(board, i, j)
     |> Enum.filter(fn {player, _} -> player == color end)
     |> Enum.reject(fn pos -> pos in visited end)
   end
 
+  @doc """
+  Add indexes for each element in the board
+  """
+  @spec with_index([list]) :: [list]
   def with_index(board) do
     rows =  length(board)
     cols =
