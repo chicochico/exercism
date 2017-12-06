@@ -43,7 +43,6 @@ def say(number):
     if number in BLOCKS and number < 100:
         return BLOCKS[number]
 
-    keys = list(BLOCKS.keys())[:0:-1]
     parts = split(number)
     result = []
 
@@ -58,7 +57,7 @@ def say(number):
 
 
 def split(n):
-    blocks = [
+    scales = [
         1_000_000_000_000,
         1_000_000_000,
         1_000_000,
@@ -67,7 +66,7 @@ def split(n):
     ]
     result = []
 
-    for b in blocks:
+    for b in scales:
         rem = n % b
         if rem < n:
             div = n // b
