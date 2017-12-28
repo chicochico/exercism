@@ -26,13 +26,13 @@ defmodule Bowling do
   end
   def roll([] = game, roll), do: [{roll} | game]
   def roll([{10} | _] = game, roll), do: [{roll} | game]
+  def roll([{_, _} | _] = game, roll), do: [{roll} | game]
   def roll([{b1} | t], roll) do
     cond do
       b1+roll > 10 -> {:error, "Pin count exceeds pins on the lane"}
       true -> [{b1, roll} | t]
     end
   end
-  def roll([{_, _} | _] = game, roll), do: [{roll} | game]
 
   @doc """
     Returns the score of a given game of bowling if the game is complete.
@@ -45,31 +45,31 @@ defmodule Bowling do
       |> Enum.reverse
       |> Enum.split(10)
 
-    case game_is_complete?(game, bonus) do
-      true ->
-        case bonus do
-          [] -> score(game, 0)
-          [{b}] -> score(game, b)
-          [{b1, b2}] -> score(game, b1+b2)
-          [{10}, {b}] -> score(game, 10+b)
-        end
-      false -> {:error, "Score cannot be taken until the end of the game"}
+    if game_is_complete?(game, bonus) do
+      case bonus do
+        [] -> score(game, 0)
+        [{b}] -> score(game, b)
+        [{b1, b2}] -> score(game, b1+b2)
+        [{10}, {b}] -> score(game, 10+b)
+      end
+    else
+      {:error, "Score cannot be taken until the end of the game"}
     end
   end
   def score([], tally), do: tally
   def score([{b1, b2} | t], tally) do
     frame = b1+b2
-    cond do
-      frame == 10 ->
-        case t do
-          [{b, _} | _] -> score(t, tally+frame+b)
-          [{b} | _] -> score(t, tally+frame+b)
-          [] -> score(t, tally+frame)
-        end
-      true -> score(t, tally+frame)
+    if frame == 10 do  # spare
+      case t do
+        [{b, _} | _] -> score(t, tally+frame+b)
+        [{b} | _] -> score(t, tally+frame+b)
+        [] -> score(t, tally+frame)
+      end
+    else
+      score(t, tally+frame)
     end
   end
-  def score([{10} | t], tally) do
+  def score([{10} | t], tally) do  # strike
     case t do
       [{b1, b2} | _] -> score(t, tally+10+b1+b2)
       [{b1}, {b2} | _] -> score(t, tally+10+b1+b2)
