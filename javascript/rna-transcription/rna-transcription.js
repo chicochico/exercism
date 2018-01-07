@@ -8,15 +8,13 @@ DnaTranscriber.prototype.toRna = function (dna) {
     'T': 'A',
     'A': 'U',
   }
-  var rna = '';
+  dna = dna.split('')
+  rna = dna.map(nucleotide => dictionary[nucleotide])
 
-  for (nucleotide in dna) {
-    transcribed_nucleotide = dictionary[dna[nucleotide]]
-    if (transcribed_nucleotide != undefined) {
-      rna += transcribed_nucleotide;
-    } else {
-      throw Error('Invalid input');
-    }
+  if (rna.indexOf(undefined) != -1) {
+    throw Error('Invalid input');
+  } else {
+    rna = rna.join('')
   }
 
   return rna;
