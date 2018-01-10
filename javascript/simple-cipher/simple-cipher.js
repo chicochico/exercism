@@ -2,17 +2,10 @@ class Cypher {
   constructor(key=null) {
     if (key == null) {
       this.key = this.generateRandomKey();
-    } else if (key == '') {
-      // invalid empty key
+    } else if (key == '' || key.match(/[^a-z]/g)) {
+      // invalid key
       throw Error('Bad key');
     } else {
-      // check if key content is valid
-      for (let c in key) {
-        let key_char_code = key[c].charCodeAt(0)
-        if (key_char_code < 97 || key_char_code > 122) {
-          throw Error('Bad key');
-        }
-      }
       this.key = key;
     }
   }
@@ -45,8 +38,8 @@ class Cypher {
       [...Array(Math.floor(text.length/key.length))].forEach(_ => key += this.key)
     }
     key = key.split('');
-    var encoded = '';
     text = text.split('');
+    var encoded = '';
 
     for (let char in text) {
       encoded += this.shiftChar(text[char], key[char]);
@@ -61,8 +54,8 @@ class Cypher {
       [...Array(Math.floor(text.length/key.length))].forEach(_ => key += this.key)
     }
     key = key.split('');
-    var decoded = '';
     text = text.split('');
+    var decoded = '';
 
     for (let char in text) {
       decoded += this.shiftChar(text[char], key[char], true);
