@@ -22,9 +22,8 @@ NUMERALS = {
 
 def numeral(number):
     result = []
-    while number > 0:
-        for n in NUMERALS:
-            if number >= n:
-                result.append(NUMERALS[n] * (number // n))
-                number = number % n
+    for n in NUMERALS:
+        if number >= n:
+            result.append(NUMERALS[n] * (number // n))
+            number = number % n
     return ''.join(result)
