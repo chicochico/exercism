@@ -7,7 +7,7 @@ def encode(plain_text):
         return ''
 
     normalized = normalize(plain_text)
-    word_size = calculate_word_size(normalized)
+    word_size = math.ceil(len(normalized) ** 0.5)
     chunks = chunk(normalized, word_size)
 
     # add padding spaces for zipping
@@ -20,15 +20,6 @@ def encode(plain_text):
 
 def normalize(text):
     return ''.join(re.findall(r'[a-z1-9]', text.lower()))
-
-
-def calculate_word_size(text):
-    '''Calculate the numbers of characters per word'''
-    length = len(text)
-    size = 1
-    while math.ceil(length/size) > size:
-        size += 1
-    return size
 
 
 def chunk(text, size):
