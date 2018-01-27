@@ -8,12 +8,13 @@ defmodule Sieve do
     2..limit
     |> Enum.to_list
     |> primes_to([])
+    |> Enum.reverse
   end
 
   @spec primes_to(list, list) :: list
   def primes_to([], acc), do: acc
   def primes_to([h|t], acc) do
     (for n <- t, rem(n, h) != 0, do: n)
-    |> primes_to(acc ++ [h])
+    |> primes_to([h | acc])
   end
 end
