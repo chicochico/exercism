@@ -1,35 +1,17 @@
-SUBLIST = 'sublist'
-SUPERLIST = 'superlist'
-EQUAL = 'equal'
-UNEQUAL = 'unequal'
+SUBLIST = 0
+SUPERLIST = 1
+EQUAL = 2
+UNEQUAL = 3
 
 
-def check_lists(first_list, second_list):
-    if first_list == second_list:
+def check_lists(l1, l2):
+    l1 = str(l1).replace('[', '').replace(']', '')
+    l2 = str(l2).replace('[', '').replace(']', '')
+
+    if l1 == l2:
         return EQUAL
-    elif first_list == []:
+    elif l1 in l2:
         return SUBLIST
-    elif second_list == []:
+    elif l2 in l1:
         return SUPERLIST
-    elif contains(second_list, first_list):
-        return SUBLIST
-    elif contains(first_list, second_list):
-        return SUPERLIST
-    else:
-        return UNEQUAL
-
-
-def contains(l1, l2):
-    try:
-        # starting element of l2
-        start_element = l2[0]
-        while len(l1) > len(l2):
-            # index if starting element in l1
-            index = l1.index(start_element)
-            l1_slice = l1[index:index+len(l2)]
-            if l1_slice == l2:
-                return True
-            # slice l1 to remove not matching part
-            l1 = l1[l1.index(start_element)+1:]
-    except (ValueError, IndexError):
-        return False
+    return UNEQUAL
