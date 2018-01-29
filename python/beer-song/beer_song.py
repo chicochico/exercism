@@ -16,4 +16,3 @@ def verse(number):
 
 def song(start, stop=0):
     return '\n'.join([verse(n) for n in range(start, stop-1, -1)]) + '\n'
-
