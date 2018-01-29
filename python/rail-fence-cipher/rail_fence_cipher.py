@@ -19,6 +19,5 @@ def decode(encoded_message, rails):
     msg_len = len(encoded_message)
     indexes = fence_pattern(range(msg_len), rails)
     indexes = [n for row in indexes for n in row]  # flatten
-    indexes = zip(indexes, range(msg_len))
-    read_sequence = [i for (_, i) in sorted(indexes)]
-    return ''.join([encoded_message[i] for i in read_sequence])
+    indexes = zip(indexes, encoded_message)
+    return ''.join([c for (_, c) in sorted(indexes)])
