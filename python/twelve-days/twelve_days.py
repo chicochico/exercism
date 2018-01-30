@@ -1,66 +1,43 @@
-VERSES = {
-    1: ('On the first day of Christmas my true love gave to me,'
-        ' a Partridge in a Pear Tree.\n'),
+DAYS = [
+    'first',
+    'second',
+    'third',
+    'fourth',
+    'fifth',
+    'sixth',
+    'seventh',
+    'eighth',
+    'ninth',
+    'tenth',
+    'eleventh',
+    'twelfth',
+]
 
-    2: ('On the second day of Christmas my true love gave to me,'
-        ' two Turtle Doves, and a Partridge in a Pear Tree.\n'),
-
-    3: ('On the third day of Christmas my true love gave to me,'
-        ' three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.\n'),
-
-    4: ('On the fourth day of Christmas my true love gave to me,'
-        ' four Calling Birds, three French Hens, two Turtle Doves,'
-        ' and a Partridge in a Pear Tree.\n'),
-
-    5: ('On the fifth day of Christmas my true love gave to me,'
-        ' five Gold Rings, four Calling Birds, three French Hens,'
-        ' two Turtle Doves, and a Partridge in a Pear Tree.\n'),
-
-    6: ('On the sixth day of Christmas my true love gave to me,'
-        ' six Geese-a-Laying, five Gold Rings, four Calling Birds,'
-        ' three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.\n'),
-
-    7: ('On the seventh day of Christmas my true love gave to me,'
-        ' seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings,'
-        ' four Calling Birds, three French Hens, two Turtle Doves,'
-        ' and a Partridge in a Pear Tree.\n'),
-
-    8: ('On the eighth day of Christmas my true love gave to me,'
-        ' eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying,'
-        ' five Gold Rings, four Calling Birds, three French Hens,'
-        ' two Turtle Doves, and a Partridge in a Pear Tree.\n'),
-
-    9: ('On the ninth day of Christmas my true love gave to me,'
-        ' nine Ladies Dancing, eight Maids-a-Milking, seven Swans-a-Swimming,'
-        ' six Geese-a-Laying, five Gold Rings, four Calling Birds,'
-        ' three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.\n'),
-
-    10: ('On the tenth day of Christmas my true love gave to me,'
-         ' ten Lords-a-Leaping, nine Ladies Dancing, eight Maids-a-Milking,'
-         ' seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings,'
-         ' four Calling Birds, three French Hens, two Turtle Doves,'
-         ' and a Partridge in a Pear Tree.\n'),
-
-    11: ('On the eleventh day of Christmas my true love gave to me,'
-         ' eleven Pipers Piping, ten Lords-a-Leaping, nine Ladies Dancing,'
-         ' eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying,'
-         ' five Gold Rings, four Calling Birds, three French Hens,'
-         ' two Turtle Doves, and a Partridge in a Pear Tree.\n'),
-
-    12: ('On the twelfth day of Christmas my true love gave to me,'
-         ' twelve Drummers Drumming, eleven Pipers Piping, ten Lords-a-Leaping,'
-         ' nine Ladies Dancing, eight Maids-a-Milking, seven Swans-a-Swimming,'
-         ' six Geese-a-Laying, five Gold Rings, four Calling Birds,'
-         ' three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.\n'),
-}
+PRESENTS = [
+    'a Partridge in a Pear Tree',
+    'two Turtle Doves',
+    'three French Hens',
+    'four Calling Birds',
+    'five Gold Rings',
+    'six Geese-a-Laying',
+    'seven Swans-a-Swimming',
+    'eight Maids-a-Milking',
+    'nine Ladies Dancing',
+    'ten Lords-a-Leaping',
+    'eleven Pipers Piping',
+    'twelve Drummers Drumming'
+]
 
 
 def verse(day_number):
-    return VERSES[day_number]
+    first_verse = f'On the {DAYS[day_number-1]} day of Christmas my true love gave to me'
+    presents = [PRESENTS[n] for n in range(day_number-1, 0, -1)]
+    first_present = f'and {PRESENTS[0]}' if day_number > 1 else PRESENTS[0]
+    return ', '.join([first_verse, *presents, first_present]) + '.\n'
 
 
 def verses(start, end):
-    return '\n'.join([VERSES[day] for day in range(start, end+1)]) + '\n'
+    return '\n'.join([verse(day) for day in range(start, end+1)]) + '\n'
 
 
 def sing():
