@@ -11,7 +11,7 @@ operation = {
 
 def calculate(question):
     operands = re.findall(r'-*\d+', question)
-    operands = list(reversed([int(n) for n in operands]))
+    operands = list([int(n) for n in operands][::-1])
     operations = re.findall(r'plus|minus|multiplied|divided', question)
     try:
         result = operation[operations[0]](operands.pop(), operands.pop())
