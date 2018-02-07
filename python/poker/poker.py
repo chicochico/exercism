@@ -30,13 +30,33 @@ STRAIGHT_FLUSH = 8
 
 
 def poker(hands):
-    serialized = ((i, serialize(hand)) for i, hand in enumerate(hands))
-    classified = [(i, hand, classify(hand)) for i, hand in serialized]
-    winner, _, classification = max(classified, key=lambda k: k[-1])
-    contenders = [contender for contender in classified if contender[-1] == classification]
+    ranked = [rank_hand(hand) for hand in hands]
+    highest_rank = get_highest_rank(ranked)
+    contenders = [hand for hand in ranked if hand['rank'] == highest_rank]
     if len(contenders) > 1:
-        return break_ties(contenders, classification, hands)
-    return [hands[winner]]
+        return break_ties(contenders, highest_rank)
+    return [contenders[0]['hand']]
+
+
+def break_ties(contenders, rank):
+    if rank == HIGH_CARD:
+        contenders = best_by('card_ranks', contenders)
+    elif rank == TWO_PAIR:
+        contenders = best_by('high_pair', contenders)
+        contenders = best_by('low_pair', contenders)
+        contenders = best_by('kicker', contenders)
+    else:
+        contenders = best_by('card_ranks', contenders)
+    return [h['hand'] for h in contenders]
+
+
+def best_by(attribute, hands):
+    best = max(hands, key=lambda hand: hand[attribute])[attribute]
+    return [h for h in hands if h[attribute] == best]
+
+
+def get_highest_rank(ranked):
+    return max(ranked, key=lambda hand: hand['rank'])['rank']
 
 
 def serialize(hand):
@@ -44,36 +64,47 @@ def serialize(hand):
     return [sorted(element) for element in hand]
 
 
-def classify(hand):
-    ranks, suits = hand
-    rank_count = sorted(list(Counter(ranks).values()))[::-1]
-
-    if list(range(ranks[0], ranks[-1]+1)) == ranks:
+def rank_hand(hand):
+    ranks, suits = serialize(hand)
+    hand = {'hand': hand, 'card_ranks': ranks}
+    counter = Counter(ranks)
+    rank_count = sorted(list(counter.values()))[::-1]
+    most_common = counter.most_common()
+    if is_straight(ranks):
         if len(set(suits)) == 1:
-            return STRAIGHT_FLUSH
-        return STRAIGHT
+            hand['rank'] = STRAIGHT_FLUSH
+        else:
+            hand['rank'] = STRAIGHT
+        if 2 and 14 in ranks:  # ace starts straight
+            hand['card_ranks'] = list(range(1, 6))  # ace value is 1
+    elif len(set(suits)) == 1:
+        hand['rank'] = FLUSH
+    elif rank_count[0] == 4:
+        hand['rank'] = FOUR_OF_A_KIND
+        hand['quadruple'] = most_common[0][0]
+    elif rank_count[:2] == [3, 2]:
+        hand['rank'] = FULL_HOUSE
+        hand['triple'] = most_common[0][0]
+    elif rank_count[0] == 3:
+        hand['rank'] = THREE_OF_A_KIND
+        hand['triple'] = most_common[0][0]
+    elif rank_count[:2] == [2, 2]:
+        hand['rank'] = TWO_PAIR
+        hand['high_pair'] = max(most_common[:2])[0]
+        hand['low_pair'] = min(most_common[:2])[0]
+        hand['kicker'] = most_common[2][0]
+    elif rank_count[0] == 2:
+        hand['rank'] = ONE_PAIR
+        hand['pair'] = most_common[0][0]
+        hand['kickers'] = [r for (r, _) in most_common[1:]]
+    else:
+        hand['rank'] = HIGH_CARD
+    return hand
 
-    if len(set(suits)) == 1:
-        return FLUSH
 
-    if rank_count[0] == 4:
-        return FOUR_OF_A_KIND
-
-    if rank_count[0] == 3 and rank_count[1] == 2:
-        return FULL_HOUSE
-
-    if rank_count[0] == 3:
-        return THREE_OF_A_KIND
-
-    if rank_count[0] == 2 and rank_count[1] == 2:
-        return TWO_PAIR
-
-    if rank_count[0] == 2:
-        return ONE_PAIR
-
-    return HIGH_CARD
-
-
-def break_ties(contenders, classification, hands):
-    best_hand = max(contenders, key=lambda h: h[1][0])[1][0]
-    return [hands[hand[0]] for hand in contenders if hand[1][0] == best_hand]
+def is_straight(ranks):
+    if 14 in ranks:
+        if [2, 3, 4, 5, 14] == ranks:
+            return True
+    straight = list(range(ranks[0], ranks[-1]+1))
+    return straight == ranks
