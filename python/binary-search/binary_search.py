@@ -1,9 +1,9 @@
 def binary_search(list_of_numbers, number):
-    middle = len(list_of_numbers) // 2
     left = 0
     right = len(list_of_numbers)
 
-    while left < right+1:
+    while left <= right:
+        middle = (left + right) // 2
         try:
             current = list_of_numbers[middle]
             if number == current:
@@ -12,7 +12,6 @@ def binary_search(list_of_numbers, number):
                 right = middle - 1
             else:
                 left = middle + 1
-            middle = (left + right) // 2
         except IndexError:
             break
 
