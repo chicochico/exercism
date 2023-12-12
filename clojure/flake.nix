@@ -13,7 +13,7 @@
       in
       {
         devShells.default = pkgs.mkShell {
-          packages = with pkgs; [ clojure leiningen ];
+          packages = with pkgs; [ exercism clojure leiningen ];
         };
       });
 }
