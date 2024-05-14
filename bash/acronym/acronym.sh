@@ -6,7 +6,7 @@
 # search: will match three characters - or _ or *
 # first clean up dashes and glob character
 # then word split
-phrase="${*//[-_*]/ }"
+phrase="${*//[^[a-zA-Z\']/ }"
 for word in $phrase; do
     result+="${word:0:1}"
 done
