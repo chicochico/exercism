@@ -3,8 +3,11 @@
 # Using parameter expansions
 
 # ${variable//search/replace}
-# search: will match three characters - or _ or *
-# first clean up dashes and glob character
+#
+# search: will match non-letter and non-dashes
+# and replace with space, this also removes glob
+# character *
+#
 # then word split
 phrase="${*//[^[a-zA-Z\']/ }"
 for word in $phrase; do
