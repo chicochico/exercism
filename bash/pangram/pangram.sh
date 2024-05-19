@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 
-# 1. remove everything that is not [a..z]
-# 2. sort
-# 3. deduplicate
-# 4. count length should be = 26
-#
-# use ${parameter@operator} to lowercase
-# L - tranform to lowercase
+# pure bash based on one of community solutions
+# 1. use alphabet as starting point
+# 2. for every character in the input delete it from alphabet
+# 3. if result is length zero (empty stsring) it is a pangram
 lowercased=${1@L}
-result=$(grep -o "[a-z]" <<<"$lowercased" | sort | uniq)
+alphabet="abcdefghijklmnopqrstuvwxyz"
+is_empty=${alphabet//[$lowercased]/}
 
-# output result
-[ "$(wc -l <<<"$result")" == 26 ] && echo "true" || echo "false"
+[ -z "$is_empty" ] && echo "true" || echo "false"
